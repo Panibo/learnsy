@@ -13,6 +13,7 @@
     "test": "npm run build && node --env-file-if-exists=.env --test test/*.test.mjs"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.7.10",
     "@types/node": "^26.5.0",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2"

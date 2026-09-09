@@ -1,7 +1,8 @@
 # For-you course discovery
 
 The static page mounts a client component which calls
-`GET /api/courses/for-you` on `NEXT_PUBLIC_API_URL` (localhost:4000 during development).
+`GET /api/courses/for-you` on `NEXT_PUBLIC_API_URL`, defaulting to
+https://backend-faithful-surf-4742.fly.dev in production and localhost:4000 in development.
 No provider calls run during the Next.js build. The normalized contract is shared
 as a type-only import from `backend/src/courses/types.ts`.
 
@@ -61,10 +62,12 @@ up to 24 hours old. The UI notes stale course information. Cold-start failures
 return 503 with a retry action; genuinely empty results return null. Requests have
 timeouts, a pagination limit, and same-origin pagination validation.
 
-The GitHub Pages build uses the `NEXT_PUBLIC_API_URL` repository variable. Host the
-backend separately, permit the frontend's `WEB_ORIGINS`, and allow outbound HTTPS
-to api.learn.mit.edu. No MIT API key is needed. No profile details or access keys
-are sent to MIT.
+The GitHub Pages build targets https://panibo.github.io/learnsy/ and uses the Fly.io
+API by default. The optional `NEXT_PUBLIC_API_URL` repository variable overrides
+that address. `backend/fly.toml` permits `https://panibo.github.io` through CORS and
+sets the API listener to `0.0.0.0:3000`. The backend requires a `DB_URL` Fly secret
+and outbound HTTPS to api.learn.mit.edu. No MIT API key is needed. No profile
+details or access keys are sent to MIT.
 
 ## Future personalization
 

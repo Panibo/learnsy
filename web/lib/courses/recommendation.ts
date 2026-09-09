@@ -1,11 +1,10 @@
 import { profileAccessKey } from "../profile-access";
+import { apiBaseUrl } from "../api";
 import type { CourseRecommendation, RecommendationSource } from "./types";
 
 const apiSource: RecommendationSource = {
   async getForYou(exclude?: string): Promise<CourseRecommendation | null> {
-    const base = process.env.NEXT_PUBLIC_API_URL ?? (process.env.NODE_ENV === "development" ? "http://localhost:4000" : "");
-    if (!base) throw new Error("The course service is not configured. Please try again later.");
-    const url = new URL(`${base.replace(/\/$/, "")}/api/courses/for-you`);
+    const url = new URL(`${apiBaseUrl()}/api/courses/for-you`);
     if (exclude) url.searchParams.set("exclude", exclude);
     let response: Response;
     try {

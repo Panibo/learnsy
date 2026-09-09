@@ -31,17 +31,29 @@ Loading failures disable editing to avoid overwriting a profile that failed to l
 
 ## Deployment
 
-GitHub Pages serves only the frontend. Host this backend separately with Node 22+
-and MongoDB connectivity; run `npm run build` followed by `npm start`. Configure
-`DB_URL`, `MONGODB_DB`, `PORT`, and `HOST` as needed (`0.0.0.0` for containers).
-Put the API behind HTTPS and set `WEB_ORIGINS` to the exact frontend origin, for
-example `https://example.github.io` (without the repository path).
+The frontend is hosted at https://panibo.github.io/learnsy/ and the API at
+https://backend-faithful-surf-4742.fly.dev. Production frontend builds use these
+defaults; development continues to use the local API on port 4000. The Pages
+workflow automatically uses the repository base path and the Fly.io API address.
+`NEXT_PUBLIC_API_URL` is an optional repository variable override. Set it only
+when targeting a different backend; a previously configured value takes precedence.
 
-Set the GitHub repository variable `NEXT_PUBLIC_API_URL` to the backend HTTPS
-address before deploying Pages. The workflow embeds this public address at build
-time; MongoDB credentials stay exclusively on the backend. No backend is deployed
-by the Pages workflow. Production builds without an API address show a configuration
-error instead of silently storing data locally.
+`fly.toml` makes the API listen on `0.0.0.0:3000`, matching Fly's `internal_port`,
+and permits the frontend origin `https://panibo.github.io`. CORS origins do not
+include the `/learnsy` path. The Docker image excludes local environment files;
+configure the database connection as a Fly secret before deploying:
+
+```sh
+cd backend
+fly secrets set DB_URL='<MongoDB connection string>' --app backend-faithful-surf-4742
+fly deploy
+```
+
+The database name defaults to `aisprint`; set `MONGODB_DB` on Fly if a different
+database is intended. MongoDB credentials stay on the backend. Fly deploys the API;
+pushing frontend changes to `master` or running the Pages workflow deploys the
+frontend separately. A successful `OPTIONS /api/profile` request with
+`Origin: https://panibo.github.io` returns 204 and the matching CORS header.
 
 ## Verification
 

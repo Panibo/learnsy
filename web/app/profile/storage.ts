@@ -1,4 +1,5 @@
 import { profileAccessKey } from "../../lib/profile-access";
+import { apiBaseUrl } from "../../lib/api";
 
 export type Profile = {
   name: string;
@@ -19,12 +20,6 @@ export const emptyProfile: Profile = {
   bio: "", companyGoal: "", goals: "", linkedin: "", interests: [], cv: null,
 };
 
-function apiUrl() {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? (process.env.NODE_ENV === "development" ? "http://localhost:4000" : "");
-  if (!base) throw new Error("The profile service is not configured. Set NEXT_PUBLIC_API_URL when building the website.");
-  return `${base.replace(/\/$/, "")}/api/profile`;
-}
-
 function encodeFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -40,7 +35,7 @@ export async function profileStore(profile?: Profile): Promise<Profile | undefin
     cv: profile.cv ? { name: profile.cv.name, type: profile.cv.type, data: await encodeFile(profile.cv) } : null,
   } : undefined;
   let response: Response;
-  const url = apiUrl();
+  const url = `${apiBaseUrl()}/api/profile`;
   const key = profileAccessKey();
   try {
     response = await fetch(url, {
