@@ -1,0 +1,26 @@
+# Dependencies (web and backend)
+node_modules/
+.pnp
+.pnp.*
+
+# Build output and caches
+.next/
+out/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+.vercel/
+
+# Local environment files (keep example configuration)
+.env*
+!.env.example
+!.env.sample
+
+# Logs
+*.log
+
+# Local system files
+.DS_Store
+Thumbs.db
