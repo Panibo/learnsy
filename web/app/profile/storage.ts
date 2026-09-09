@@ -1,8 +1,11 @@
+import { profileAccessKey } from "../../lib/profile-access";
+
 export type Profile = {
   name: string;
   email: string;
   role: string;
   organization: string;
+  companyGoal: string;
   location: string;
   bio: string;
   goals: string;
@@ -13,19 +16,8 @@ export type Profile = {
 
 export const emptyProfile: Profile = {
   name: "", email: "", role: "", organization: "", location: "",
-  bio: "", goals: "", linkedin: "", interests: [], cv: null,
+  bio: "", companyGoal: "", goals: "", linkedin: "", interests: [], cv: null,
 };
-
-const ACCESS_KEY = "learnsy-profile-access-key";
-
-function accessKey() {
-  let key = localStorage.getItem(ACCESS_KEY);
-  if (!key || !/^[a-f0-9]{64}$/.test(key)) {
-    key = Array.from(crypto.getRandomValues(new Uint8Array(32)), (byte) => byte.toString(16).padStart(2, "0")).join("");
-    localStorage.setItem(ACCESS_KEY, key);
-  }
-  return key;
-}
 
 function apiUrl() {
   const base = process.env.NEXT_PUBLIC_API_URL ?? (process.env.NODE_ENV === "development" ? "http://localhost:4000" : "");
@@ -49,7 +41,7 @@ export async function profileStore(profile?: Profile): Promise<Profile | undefin
   } : undefined;
   let response: Response;
   const url = apiUrl();
-  const key = accessKey();
+  const key = profileAccessKey();
   try {
     response = await fetch(url, {
       method: profile ? "PUT" : "GET",
@@ -67,6 +59,7 @@ export async function profileStore(profile?: Profile): Promise<Profile | undefin
   if (profile) return profile;
   const saved = await response.json();
   return {
+    ...emptyProfile,
     ...saved,
     cv: saved.cv ? new File([Uint8Array.from(atob(saved.cv.data), (character) => character.charCodeAt(0))], saved.cv.name, { type: saved.cv.type }) : null,
   };
@@ -88,5 +81,5 @@ export async function loadProfile(): Promise<{ profile?: Profile; needsMigration
       transaction.onerror = () => { db.close(); reject(new Error("The previous local profile could not be loaded. Please reload.")); };
     };
   });
-  return { profile: local, needsMigration: Boolean(local) };
+  return { profile: local ? { ...emptyProfile, ...local } : undefined, needsMigration: Boolean(local) };
 }

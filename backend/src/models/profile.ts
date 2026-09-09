@@ -5,6 +5,7 @@ export class InputError extends Error {}
 export type ProfileData = {
   name: string; email: string; role: string; organization: string;
   location: string; bio: string; goals: string; linkedin: string;
+  companyGoal?: string;
   interests: string[];
   cv: { name: string; type: string; data: Binary } | null;
 };
@@ -42,7 +43,8 @@ export function parseProfile(input: unknown): ProfileData {
     const types: Record<string, string> = { pdf: "application/pdf", doc: "application/msword", docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" };
     cv = { name: file.name, type: types[extension], data: new Binary(bytes) };
   }
-  return { name, email, role: string("role", 160), organization: string("organization", 160), location: string("location", 160), bio: string("bio", 2000), goals: string("goals", 2000), linkedin, interests, cv };
+  const companyGoal = value.companyGoal === undefined ? "" : string("companyGoal", 2000);
+  return { name, email, companyGoal, role: string("role", 160), organization: string("organization", 160), location: string("location", 160), bio: string("bio", 2000), goals: string("goals", 2000), linkedin, interests, cv };
 }
 
 export function profiles(db: Db) { return db.collection<ProfileDocument>("profiles"); }

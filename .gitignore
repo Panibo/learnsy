@@ -24,3 +24,4 @@ next-env.d.ts
 # Local system files
 .DS_Store
 Thumbs.db
+backend/esco-v1.2.1.json-ld

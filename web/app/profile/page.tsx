@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import SiteHeader from "../components/site-header";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { emptyProfile, loadProfile, profileStore, type Profile } from "./storage";
 import styles from "./page.module.css";
@@ -103,10 +103,7 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.navbar}>
-        <Link href="/" className={styles.brand}>learnsy<span>✳</span></Link>
-        <nav aria-label="Main navigation"><Link href="/courses">Courses</Link><Link href="/profile" aria-current="page">My profile</Link></nav>
-      </header>
+      <SiteHeader current="profile" />
       <main className={styles.main}>
         <div className={styles.heading}><span className="eyebrow">YOUR NEXT CHAPTER</span><h1>My professional profile</h1><p>A little about you. A clearer path to what’s next.</p></div>
         <div className={styles.layout}>
@@ -130,6 +127,7 @@ export default function ProfilePage() {
                   <div><label htmlFor="email">Email address <span>*</span></label><input id="email" type="email" autoComplete="email" required maxLength={254} value={profile.email} onChange={(e) => update("email", e.target.value)} placeholder="you@example.com" /></div>
                   <div><label htmlFor="role">Current role or field of study</label><input id="role" autoComplete="organization-title" maxLength={160} value={profile.role} onChange={(e) => update("role", e.target.value)} placeholder="e.g. Product designer" /></div>
                   <div><label htmlFor="organization">Organization or school</label><input id="organization" autoComplete="organization" maxLength={160} value={profile.organization} onChange={(e) => update("organization", e.target.value)} placeholder="Where you work or study" /></div>
+                  <div className={styles.full}><label htmlFor="companyGoal">Company sustainability goal</label><textarea id="companyGoal" maxLength={2000} value={profile.companyGoal} onChange={(e) => update("companyGoal", e.target.value)} placeholder="What sustainability priority is your organization working toward?" /></div>
                   <div className={styles.full}><label htmlFor="location">Location</label><input id="location" autoComplete="address-level2" maxLength={160} value={profile.location} onChange={(e) => update("location", e.target.value)} placeholder="City, country" /></div>
                   <div className={styles.full}><label htmlFor="bio">About you</label><textarea id="bio" maxLength={2000} value={profile.bio} onChange={(e) => update("bio", e.target.value)} placeholder="A short introduction to your experience, skills, and background…" /></div>
                 </div>
