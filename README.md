@@ -8,7 +8,7 @@ Built for the **Learnsy challenge** at [AI Solution Sprint](https://maria.io/eve
 
 ## The challenge
 
-The Learnsy challenge brief, supplied as *Challenges.pdf*, asks how sustainability learning can become something employees are curious to follow and apply in their everyday work. There is plenty of learning content available; the difficult part is connecting it to the right person's role, interests, existing knowledge and their company's sustainability priorities.
+The Learnsy challenge is to make sustainability learning something employees are curious to follow and apply in their everyday work. There is plenty of learning content available; the difficult part is connecting it to the right person's role, interests, existing knowledge and their company's sustainability priorities.
 
 Our approach focuses on the next learning decision: show one course, explain its relevance, make the personal benefits easy to scan, and suggest a small action to try at work.
 
