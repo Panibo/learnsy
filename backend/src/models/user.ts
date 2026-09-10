@@ -1,4 +1,4 @@
-import type { Db, ObjectId } from "mongodb";
+import { MongoServerError, type Db, type ObjectId } from "mongodb";
 
 export interface User {
   _id?: ObjectId;
@@ -22,9 +22,15 @@ export const userSchema = {
 };
 
 export async function initializeUsers(db: Db) {
-  const users = await db.createCollection<User>("users", {
-    validator: { $jsonSchema: userSchema },
-  });
+  let users;
+  try {
+    users = await db.createCollection<User>("users", {
+      validator: { $jsonSchema: userSchema },
+    });
+  } catch (error) {
+    if (!(error instanceof MongoServerError) || error.code !== 48) throw error;
+    users = db.collection<User>("users");
+  }
   await users.createIndex({ email: 1 }, { unique: true });
   return users;
 }

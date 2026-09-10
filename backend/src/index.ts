@@ -5,8 +5,15 @@ import { createApiServer } from "./server.js";
 let server: ReturnType<typeof createApiServer> | undefined;
 
 async function main() {
-  const db = await connectDatabase();
-  await initializeUsers(db);
+  let db;
+  try {
+    db = await connectDatabase();
+    await initializeUsers(db);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message.replace(/mongodb(?:\+srv)?:\/\/[^\s/]+:[^@\s]+@/gi, "mongodb://<redacted>@") : "Unknown startup error.";
+    console.error(`Database unavailable: ${message}`);
+    await disconnectDatabase();
+  }
   const origins = (process.env.WEB_ORIGINS ?? "http://localhost:3000,http://127.0.0.1:3000").split(",").map((value) => value.trim()).filter(Boolean);
   const port = Number(process.env.PORT ?? 4000);
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error("Invalid PORT");
@@ -25,8 +32,9 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
   });
 }
 
-main().catch(async () => {
-  console.error("Backend startup failed. Check the database and server configuration.");
+main().catch(async (error: unknown) => {
+  const message = error instanceof Error ? error.message.replace(/mongodb(?:\+srv)?:\/\/[^\s/]+:[^@\s]+@/gi, "mongodb://<redacted>@") : "Unknown startup error.";
+  console.error(`Backend startup failed: ${message}`);
   await disconnectDatabase();
   process.exitCode = 1;
 });

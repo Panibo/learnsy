@@ -26,7 +26,7 @@ async function body(request: IncomingMessage) {
   catch { throw new InputError("Request must contain valid JSON."); }
 }
 
-export function createApiServer(db: Db, allowedOrigins: string[], courseSource: RecommendationSource = mitCourseSource) {
+export function createApiServer(db: Db | undefined, allowedOrigins: string[], courseSource: RecommendationSource = mitCourseSource) {
   return createServer({ requestTimeout: 30_000, headersTimeout: 15_000 }, async (request, response) => {
     try {
       const origin = request.headers.origin;
@@ -47,7 +47,7 @@ export function createApiServer(db: Db, allowedOrigins: string[], courseSource: 
           const token = authorization?.match(/^Bearer ([a-f0-9]{64})$/)?.[1];
           if (authorization !== undefined && !token) { json(response, 401, { error: "A valid profile access key is required." }); return; }
           let learner = null;
-          if (token) {
+          if (token && db) {
             try { learner = await loadLearner(db, createHash("sha256").update(token).digest("hex")); }
             catch { json(response, 503, { error: "Your saved profile could not be loaded. Please try again." }); return; }
           }
@@ -61,6 +61,7 @@ export function createApiServer(db: Db, allowedOrigins: string[], courseSource: 
       if (request.method !== "GET" && request.method !== "PUT") {
         response.setHeader("Allow", "GET, PUT, OPTIONS"); json(response, 405, { error: "Method not allowed." }); return;
       }
+      if (!db) { json(response, 503, { error: "The profile service is temporarily unavailable. Please try again." }); return; }
       const token = request.headers.authorization?.match(/^Bearer ([a-f0-9]{64})$/)?.[1];
       if (!token) { json(response, 401, { error: "A valid profile access key is required." }); return; }
       const keyHash = createHash("sha256").update(token).digest("hex");
